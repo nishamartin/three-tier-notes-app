@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notes App</title>
+</head>
+<body>
+  <h1>Notes App</h1>
+
+  <form id="noteForm">
+    <input type="text" id="noteInput" placeholder="Write a note..." required />
+    <button type="submit">Add Note</button>
+  </form>
+
+  <ul id="notesList"></ul>
+
+  <script>
+    const API_URL = "http://3.110.176.70:3000/notes";
+
+    async function fetchNotes() {
+      const res = await fetch(API_URL);
+      const notes = await res.json();
+      const list = document.getElementById("notesList");
+      list.innerHTML = "";
+      notes.forEach(note => {
+        const li = document.createElement("li");
+        li.textContent = note.text;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById("noteForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("noteInput");
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input.value })
+      });
+      input.value = "";
+      fetchNotes();
+    });
+
+    // Load notes on page load
+    fetchNotes();
+  </script>
+</body>
+</html>
+
